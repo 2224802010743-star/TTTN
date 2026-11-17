@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% block title %}Tổng quan bãi xe{% endblock %}
+{% block content %}
+<h1>Tổng quan</h1><p class="muted">Thời gian máy chủ: {{ records[0].entry_time.strftime('%d/%m/%Y %H:%M') if records else 'Chưa có dữ liệu' }} · Hiển thị tối đa 300 lượt gần nhất.</p>
+<div class="cards">
+<div class="card">Xe vào hôm nay<div class="num">{{ entered_today }}</div></div>
+<div class="card">Xe ra hôm nay<div class="num">{{ exited_today }}</div></div>
+<div class="card">Đang gửi<div class="num">{{ current_count }}</div></div>
+<div class="card">Lượt đang hiển thị<div class="num">{{ records|length }}</div></div>
+</div>
+<form class="toolbar" method="get">
+<input name="plate" value="{{ plate }}" placeholder="Tìm theo biển số">
+<select name="status"><option value="all" {% if status=='all' %}selected{% endif %}>Tất cả trạng thái</option><option value="IN" {% if status=='IN' %}selected{% endif %}>Đang gửi</option><option value="EXITED" {% if status=='EXITED' %}selected{% endif %}>Đã ra</option></select>
+<button>Tìm kiếm</button><a href="{{ url_for('admin_dashboard') }}"><button type="button" style="background:#667085">Đặt lại</button></a>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Biển số</th><th>Trạng thái</th><th>Giờ vào</th><th>Ảnh vào</th><th>Giờ ra</th><th>Ảnh ra</th><th>Xóa dữ liệu</th></tr></thead><tbody>
+{% for r in records %}<tr>
+<td><strong>{{ r.plate }}</strong><br><small>ID lượt: {{ r.id }}</small></td>
+<td>{% if r.status=='IN' %}<strong style="color:#067647">ĐANG GỬI</strong>{% else %}<span>ĐÃ RA</span>{% endif %}</td>
+<td>{{ r.entry_time.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+<td><a href="{{ url_for('uploaded_image',filename=r.entry_image) }}" target="_blank"><img class="thumb" src="{{ url_for('uploaded_image',filename=r.entry_image) }}" alt="Ảnh xe vào"></a></td>
+<td>{{ r.exit_time.strftime('%d/%m/%Y %H:%M:%S') if r.exit_time else '—' }}</td>
+<td>{% if r.exit_image %}<a href="{{ url_for('uploaded_image',filename=r.exit_image) }}" target="_blank"><img class="thumb" src="{{ url_for('uploaded_image',filename=r.exit_image) }}" alt="Ảnh xe ra"></a>{% else %}—{% endif %}</td>
+<td><form method="post" action="{{ url_for('admin_delete_plate',plate=r.plate) }}" onsubmit="return confirm('XÓA VĨNH VIỄN toàn bộ lịch sử và ảnh của biển số {{ r.plate }}? Không thể hoàn tác.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="danger">Xóa biển số</button></form></td>
+</tr>{% else %}<tr><td colspan="7">Chưa có dữ liệu phù hợp.</td></tr>{% endfor %}
+</tbody></table></div>
+<p><small>Xóa biển số sẽ xóa tất cả lượt vào/ra và ảnh của biển số đó. Hãy sao lưu trước khi xóa.</small></p>
+{% endblock %}

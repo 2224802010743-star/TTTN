@@ -1,0 +1,19 @@
+{
+  "info": {
+    "name": "Parking Lot Manager API",
+    "description": "API thử nghiệm Flask + MySQL. Đặt biến baseUrl, deviceToken và chọn ảnh trong form-data trước khi gửi.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://127.0.0.1:5000"},
+    {"key": "deviceToken", "value": "REPLACE_WITH_API_DEVICE_TOKEN"},
+    {"key": "plate", "value": "51A12345"}
+  ],
+  "item": [
+    {"name": "Health", "request": {"method": "GET", "url": "{{baseUrl}}/api/health"}},
+    {"name": "Entry", "request": {"method": "POST", "header": [{"key": "X-Device-Token", "value": "{{deviceToken}}"}], "body": {"mode": "formdata", "formdata": [{"key": "plate", "value": "{{plate}}", "type": "text"}, {"key": "image", "type": "file", "src": ""}]}, "url": "{{baseUrl}}/api/vehicles/entry"}},
+    {"name": "Current vehicles", "request": {"method": "GET", "header": [{"key": "X-Device-Token", "value": "{{deviceToken}}"}], "url": "{{baseUrl}}/api/vehicles/current"}},
+    {"name": "Exit", "request": {"method": "POST", "header": [{"key": "X-Device-Token", "value": "{{deviceToken}}"}], "body": {"mode": "formdata", "formdata": [{"key": "plate", "value": "{{plate}}", "type": "text"}, {"key": "image", "type": "file", "src": ""}]}, "url": "{{baseUrl}}/api/vehicles/exit"}},
+    {"name": "History", "request": {"method": "GET", "header": [{"key": "X-Device-Token", "value": "{{deviceToken}}"}], "url": "{{baseUrl}}/api/vehicles/history?plate={{plate}}&page=1"}}
+  ]
+}
